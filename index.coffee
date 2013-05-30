@@ -19,18 +19,21 @@ appView.on "AviaryScriptIsReady", =>
     apiVersion : 2
     tools      : "all"
     appendTo   : "injection_site"
-    onSave     : (imageID, newURL) => 
-      img = document.getElementById imageID
-      img.src = newURL
-    onError    : (errorObj) =>
-      log errorObj.message
+    noCloseButton: yes
+    onSaveButtonClicked : => 
+      [meta, base64] = document.getElementById("avpw_canvas_element").toDataURL().split ","
+      temp   = FSHelper.createFileFromPath "Sites/fatihacet.kd.io/temp.txt"
+      temp.save base64, (err, res) =>
+        KD.getSingleton("kiteController").run """base64 -d #{FSHelper.escapeFilePath temp.path} > #{FSHelper.escapeFilePath "Sites/fatihacet.kd.io/a.png"} ; rm #{FSHelper.escapeFilePath temp.path}""", (err, res) =>
+          log "saved"
+      return false
      
   launchEditor = (id, src) =>
     featherEditor.launch
       image : id
       url   : src
     return no
-
+    
   img = new KDCustomHTMLView
     tagName : "img"
     domId   : 'image1'
@@ -51,14 +54,3 @@ appView.on "AviaryScriptIsReady", =>
     
   appView.addSubView view
   appView.addSubView img
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
