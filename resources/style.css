@@ -1,4 +1,9 @@
-.aviaryimageeditor .name-input {
+.aviary-name-input {
   margin: 0 10px 10px;
   width: 380px;  
+}
+.aviary-loader {
+  left: 50%;
+  top: 50%;
+  margin: -24px 0 0 -24px;
 }
