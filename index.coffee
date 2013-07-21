@@ -3,7 +3,6 @@ KD.enableLogs()
 hd        = document.head || document.getElementsByTagName("head")[0]
 oldSc     = document.getElementById "aviary"
 hd.removeChild oldSc if oldSc
-
 sc        = document.createElement "script"
 sc.type   = "text/javascript"
 sc.id     = "aviary"
@@ -11,6 +10,9 @@ sc.src    = "https://dme0ih8comzn4.cloudfront.net/js/feather.js"
 sc.onload = => appView.emit "AviaryScriptIsReady"
 
 hd.appendChild sc
+
+oldEl     = document.getElementById "avpw_holder"
+document.body.removeChild oldEl if oldEl
 
 appView.on "AviaryScriptIsReady", =>
   
@@ -47,7 +49,9 @@ appView.on "AviaryScriptIsReady", =>
             Save         : 
               title      : "Save"
               cssClass   : "modal-clean-gray"
-              callback   : -> callback() and modal.destroy()
+              callback   : ->
+                callback()
+                modal.destroy()
             Cancel       :
               title      : "Cancel"
               cssClass   : "modal-cancel"
@@ -55,9 +59,11 @@ appView.on "AviaryScriptIsReady", =>
                   
       modal.addSubView input = new KDHitEnterInputView
         type             : "text"
-        cssClass         : "name-input"
+        cssClass         : "aviary-name-input"
         placeholder      : "Name of your image"
-        callback         : -> callback() and modal.destroy()
+        callback         : ->
+          callback()
+          modal.destroy()
           
       return no
      
@@ -66,7 +72,7 @@ appView.on "AviaryScriptIsReady", =>
       image : id
       url   : src
       
-    document.getElementById("avpw_save_button").setAttribute "href", "#"
+    document.getElementById("avpw_save_button")?.setAttribute "href", "#"
     return no
     
   img = new KDCustomHTMLView
@@ -81,11 +87,18 @@ appView.on "AviaryScriptIsReady", =>
     domId   : "injection_site"
     
   view.on "viewAppended", =>
+    view.addSubView loader = new KDLoaderView
+      cssClass : "aviary-loader"
+      size     :
+        width  : 48
+        height : 48
+    loader.show()
     img.on "viewAppended", =>
-      KD.utils.wait 1500, =>
+      KD.utils.wait 1500, ->
         oldEl = document.getElementById "avpw_holder"
         document.body.removeChild oldEl if oldEl
-        launchEditor 'image1', 'http://images.aviary.com/imagesv5/feather_default.jpg' 
+        launchEditor "image1", "http://images.aviary.com/imagesv5/feather_default.jpg"
+        loader.destroy()
     
   appView.addSubView view
   appView.addSubView img
