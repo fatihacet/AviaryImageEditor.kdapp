@@ -19,8 +19,6 @@ class AviaryImageEditor extends KDObject
     document.body.removeChild oldEl if oldEl
     
     sc.onload = =>
-      log "script loaded"
-      
       featherEditor = new Aviary.Feather
         apiKey     : "ZvjDjQU-0E6esjLnDhSntQ"
         apiVersion : 3
@@ -65,7 +63,7 @@ class AviaryImageEditor extends KDObject
           modal.addSubView input = new KDHitEnterInputView
             type             : "text"
             cssClass         : "aviary-name-input"
-            placeholder      : "Name of your image"
+            placeholder      : "Name of your image without extension"
             callback         : ->
               callback()
               modal.destroy()
@@ -78,6 +76,9 @@ class AviaryImageEditor extends KDObject
           url   : src
           
         document.getElementById("avpw_save_button")?.setAttribute "href", "#"
+        document.getElementById("avpw_apply_container")?.setAttribute "href", "#"
+        document.getElementById("avpw_all_effects")?.setAttribute "href", "#"
+        document.getElementById("avpw_up_one_level")?.setAttribute "href", "#"
         return no
         
       imgSrc = @getOptions().image or "http://images.aviary.com/imagesv5/feather_default.jpg"
@@ -90,8 +91,7 @@ class AviaryImageEditor extends KDObject
           src   : imgSrc
         load    : ->
           KD.utils.wait 1500, ->
-            oldEl = document.getElementById "avpw_holder"
-            document.body.removeChild oldEl if oldEl
+            $("#avpw_holder").remove()
             launchEditor "image1", imgSrc
       
       img.hide()
@@ -107,15 +107,15 @@ appView.once "FileNeedsToBeOpened", (file) ->
   appView.destroySubViews()
   filePath       = FSHelper.plainPath file.path
   fileName       = FSHelper.getFileNameFromPath file.path
-  command        = "mkdir -p Web/.applications/aviaryimageeditor ; cp #{filePath} Web/.applications/aviaryimageeditor/#{fileName}"
+  command        = "mkdir -p Web/.applications ; cp #{filePath} Web/.applications/#{fileName}"
   kiteController = KD.getSingleton "kiteController"
   
   kiteController.run command, (err, res) ->
     new AviaryImageEditor
-      image: """http://#{KD.getSingleton("vmController").defaultVmName}/.applications/aviaryimageeditor/#{fileName}"""
+      image: """http://#{KD.getSingleton("vmController").defaultVmName}/.applications/#{fileName}"""
       
-    @utils.wait 15000, ->
-      kiteController.run "rm Web/.applications/aviaryimageeditor/#{fileName}"
+    KD.utils.wait 15000, ->
+      kiteController.run "rm Web/.applications/#{fileName}"
 
 appView.emit "ready"
 
@@ -124,14 +124,3 @@ appView.on "KDObjectWillBeDestroyed", ->
   hd.removeChild oldScr if oldScr
 
 new AviaryImageEditor
-
-
-
-
-
-
-
-
-
-
-
